@@ -1,0 +1,14 @@
+- name: set up mongo DB
+  hosts: all
+  become: true
+  tasks:
+    - name: install mongodb
+      ansible.builtin.shell: dnf install mongodb-org -y
+    - name: enable mongodb
+      ansible.builtin.shell: systemctl enable mongod
+    - name: start mongodb
+      ansible.builtin.shell: systemctl start mongod
+    - name: Update mongodb.conf to listen on all address
+      ansible.builtin.shell: sed -i -e 's/127.0.0.1/0.0.0.0/' /etc/mongod.conf
+    - name: restart mongodb
+      ansible.builtin.shell: systemctl restart mongod
