@@ -1,0 +1,30 @@
+- name: install golang
+  ansible.builtin.dnf:
+    name: golang
+    state: installed
+
+- name: add user roboshop and extract the content
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: artifact_download
+
+- name: go build
+  ansible.builtin.shell: go mod init dispatch; go get; go build
+  args:
+    chdir: /app
+
+- name: copy dispatch config
+  ansible.builtin.copy:
+    src: dispatch.service
+    dest: /etc/systemd/system/dispatch.service
+
+- name: enable
+  ansible.builtin.systemd:
+    name: dispatch
+    state: enabled
+
+- name: daemon reload
+  ansible.builtin.systemd:
+    name: dispatch
+    state: restarted
+

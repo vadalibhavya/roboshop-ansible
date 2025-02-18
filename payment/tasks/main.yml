@@ -1,0 +1,27 @@
+- name: Install Python3
+  ansible.builtin.shell: dnf install python3 gcc python3-devel -y
+
+- name: Add user and extract the content
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: artifact_download
+
+- name: Install requirements
+  ansible.builtin.shell: pip3 install -r requirements.txt
+  args:
+    chdir: /app
+
+- name: copy payment config
+  ansible.builtin.copy:
+    src: payment.service
+    dest: /etc/systemd/system/payment.service
+
+- name: enable payment
+  ansible.builtin.systemd:
+    name: payment
+    state: enabled
+
+- name: daemon reload
+  ansible.builtin.systemd:
+    name: payment
+    state: restarted
