@@ -1,0 +1,49 @@
+- name: set up shipping
+  hosts: all
+  become: true
+  tasks:
+    - name: Install maven
+      ansible.builtin.shell: dnf install maven -y
+    - name: Add user roboshop
+      ansible.builtin.user: name=roboshop
+
+    - name: create app directory
+      ansible.builtin.file:
+        path: /app
+        state: directory
+
+    - name: download shipping content
+      ansible.builtin.shell: curl -o /tmp/shipping.zip https://roboshop-artifacts.s3.amazonaws.com/shipping-v3.zip
+    - name: unzip shipping content
+      ansible.builtin.shell: cd /app; unzip /tmp/shipping.zip
+    - name: mvn package
+      ansible.builtin.shell: cd /app; mvn clean package
+    - name: move jar file
+      ansible.builtin.copy:
+        src: target/shipping-1.0.jar
+        dest: /app/shipping.jar
+    - name: copy shipping config
+      ansible.builtin.copy:
+        src: shipping.service
+        dest: /etc/systemd/system/shipping.service
+    - name: daemon reload
+      ansible.builtin.shell: systemctl daemon-reload
+    - name: enable shipping
+      ansible.builtin.shell: systemctl enable shipping
+    - name: start shipping
+      ansible.builtin.shell: systemctl start shipping
+
+    - name: Install mysql
+      ansible.builtin.shell: dnf install mysql -y
+
+    - name: Load schema
+      ansible.builtin.shell: mysql -h mysql-dev.doubtfree.online -uroot -pRoboShop@1 < /app/db/schema.sql
+
+    - name: Load app user
+      ansible.builtin.shell: mysql -h mysql-dev.doubtfree.online -uroot -pRoboShop@1 < /app/db/app-user.sql
+
+    - name: load master Data
+      ansible.builtin.shell: mysql -h mysql-dev.doubtfree.online -uroot -pRoboShop@1 < /app/db/master-data.sql
+
+    - name: restart shipping
+      ansible.builtin.shell: systemctl restart shipping

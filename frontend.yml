@@ -1,26 +1,6 @@
 - name: Frontend setup
   hosts: all
   become: true
-  tasks:
-    - name: Disable nginx
-      ansible.builtin.shell: dnf module disable nginx -y
-    - name: Enable nginx
-      ansible.builtin.shell: dnf module enable nginx:1.24 -y
-    - name: Install nginx
-      ansible.builtin.shell: dnf install nginx -y
-    - name: enable nginx
-      ansible.builtin.shell: systemctl enable nginx
-    - name: start nginx
-      ansible.builtin.shell: systemctl start nginx
-    - name: remove the old content
-      ansible.builtin.shell: rm -rf /usr/share/nginx/html/*
-    - name: download frontend content
-      ansible.builtin.shell: curl -o /tmp/frontend.zip https://roboshop-artifacts.s3.amazonaws.com/frontend-v3.zip
-    - name: unzip frontend content
-      ansible.builtin.shell: cd /usr/share/nginx/html; unzip /tmp/frontend.zip
-    - name: copy nginx config
-      ansible.builtin.copy:
-        src: nginx.conf
-        dest: /etc/nginx/nginx.conf
-    - name: restart nginx
-      ansible.builtin.shell: systemctl restart nginx
+  roles:
+    - frontend
+

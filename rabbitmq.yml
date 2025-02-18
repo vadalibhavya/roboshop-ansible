@@ -1,0 +1,16 @@
+- name: set up Rabbitmq
+  hosts: all
+  become: true
+  tasks:
+    - name: install rabbitmq
+      ansible.builtin.shell: dnf install rabbitmq-server -y
+    - name: enable rabbitmq
+      ansible.builtin.shell: systemctl enable rabbitmq-server
+    - name: start rabbitmq
+      ansible.builtin.shell: systemctl start rabbitmq-server
+    - name: add_user
+      ansible.builtin.shell: rabbitmqctl add_user roboshop roboshop123
+    - name: set_permissions
+      ansible.builtin.shell: rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
+    - name: restart rabbitmq
+      ansible.builtin.shell: systemctl restart rabbitmq-server
