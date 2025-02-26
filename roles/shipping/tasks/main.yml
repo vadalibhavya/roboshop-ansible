@@ -37,7 +37,7 @@
     state: installed
 
 - name: Load schema for schema,app-user, master-data.sql
-  ansible.builtin.shell: mysql -h mysql-dev.doubtfree.online -uroot -pRoboShop@1 < "{{ item }}"
+  ansible.builtin.shell: mysql -h mysql-{{ env }}.doubtfree.online -uroot -pRoboShop@1 < "{{ item }}"
   with_items:
     - /app/db/schema.sql
     - /app/db/app-user.sql
