@@ -34,11 +34,5 @@
 - name: enable the service
   ansible.builtin.systemd_service:
     name: nginx
-    state: enabled
-
-- name: ReStart the service
-  ansible.builtin.systemd_service:
-    name: nginx
     state: restarted
-
 
