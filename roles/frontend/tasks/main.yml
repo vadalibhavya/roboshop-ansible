@@ -13,6 +13,7 @@
   ansible.builtin.copy:
     src: nginx.conf
     dest: /etc/nginx/nginx.conf
+    remote_src: true
 
 - name: Remove the directory
   ansible.builtin.file:
