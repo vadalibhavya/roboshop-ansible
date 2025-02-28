@@ -14,3 +14,5 @@ all:
 	ansible-playbook -i shipping-dev.doubtfree.online, -e ansible_user=ec2-user -e ansible_password=DevOps321 -e component_name=shipping -e env=$(env) roboshop.yml
 	ansible-playbook -i payment-dev.doubtfree.online, -e ansible_user=ec2-user -e ansible_password=DevOps321 -e component_name=payment -e env=$(env) roboshop.yml
 	ansible-playbook -i dispatch-dev.doubtfree.online, -e ansible_user=ec2-user -e ansible_password=DevOps321 -e component_name=dispatch -e env=$(env) roboshop.yml
+
+
