@@ -1,0 +1,50 @@
+- name: Install Maven
+  ansible.builtin.dnf:
+    name: maven
+    state: installed
+
+- name: Download artifact
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: artifact_download
+
+- name: Clean package
+  ansible.builtin.shell: mvn clean package
+  args:
+    chdir: /app
+
+- name: Move jar file
+  ansible.builtin.file:
+    src: /app/target/shipping-1.0.jar
+    dest: /usr/share/shipping/shipping.jar
+
+- name: Copy the service file
+  ansible.builtin.copy:
+    src: shipping.service
+    dest: /etc/systemd/system/shipping.service
+
+
+- name: enable and start shipping
+  ansible.builtin.systemd:
+    name: shipping
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+
+- name: install mysql
+  ansible.builtin.dnf:
+    name: mysql
+    state: installed
+
+- name: Load schema for schema,app-user, master-data.sql
+  ansible.builtin.shell: mysql -h mysql-{{ env }}.doubtfree.online -uroot -pRoboShop@1 < "{{ item }}"
+  with_items:
+    - /app/db/schema.sql
+    - /app/db/app-user.sql
+    - /app/db/master-data.sql
+
+- name: restart shipping
+  ansible.builtin.systemd:
+    name: shipping
+    state: restarted
+
